@@ -27,3 +27,4 @@
 /src/main/resources/application-release.yaml
 /src/main/resources/application.yaml
 /src/main/resources/generatorConfig.xml
+/private.sh
