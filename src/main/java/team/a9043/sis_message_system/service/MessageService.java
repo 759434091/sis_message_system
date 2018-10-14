@@ -29,8 +29,6 @@ import java.util.stream.Collectors;
 @RabbitListener(queues = "${rbmq.queue}")
 public class MessageService {
     @Resource
-    private AppToken appToken;
-    @Resource
     private RestTemplate restTemplate;
     @Resource
     private SisJoinCourseMapper sisJoinCourseMapper;
@@ -47,6 +45,8 @@ public class MessageService {
     @SuppressWarnings("ConstantConditions")
     @RabbitHandler(isDefault = true)
     public boolean sendSignInMessage(SignInMessage signInMessage) {
+        String accessToken = (String) sisRedisTemplate.opsForValue().get("wx_access_token");
+        if (null == accessToken) return false;
         SisSchedule sisSchedule = sisScheduleMapper.selectByPrimaryKey(signInMessage.getSsId());
         if (null == sisSchedule) return false;
         LocalDateTime signInEndTime = signInMessage.getLocalDateTime();
@@ -107,7 +107,7 @@ public class MessageService {
                     request.put("form_id", formId.getFormId());
 
                     HttpEntity<JSONObject> httpEntity = new HttpEntity<>(request);
-                    JSONObject jsonObject = restTemplate.postForObject(String.format(urlFormat, appToken.getAccessToken()), httpEntity, JSONObject.class);
+                    JSONObject jsonObject = restTemplate.postForObject(String.format(urlFormat, accessToken), httpEntity, JSONObject.class);
                     if (null != jsonObject && jsonObject.has("errcode") && jsonObject.getInt("errcode") != 0)
                         log.error(String.format("Send message error: openid %s, %s", openid, jsonObject.toString()));
                 }))
