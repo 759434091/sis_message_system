@@ -119,7 +119,7 @@ public class MessageService {
                         log.info(e.getMessage());
                     else
                         log.info("success sendSignInMessage: " + sisCourse.getScId() + ", " + sisSchedule.getSsId());
-                }).join();
+                });
         return true;
     }
 }
