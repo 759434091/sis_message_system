@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@RabbitListener(queues = "${rbmq.queue}")
+@RabbitListener(queues = "${rbmq.signIn.queue}")
 public class MessageService {
     @Resource
     private RestTemplate restTemplate;
