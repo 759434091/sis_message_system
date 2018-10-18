@@ -1,19 +1,15 @@
 package team.a9043.sis_message_system.service_pojo;
 
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 public class SisContact implements Serializable {
     private static final long serialVersionUID = 113586698392218838L;
     private Integer sctId;
 
-    @NotBlank
     private String sctName;
 
-    @NotBlank
     private String sctContact;
 
-    @NotBlank
     private String sctContent;
 
     public Integer getSctId() {
