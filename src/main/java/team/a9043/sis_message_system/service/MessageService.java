@@ -44,19 +44,19 @@ public class MessageService {
 
     @SuppressWarnings("ConstantConditions")
     @RabbitHandler(isDefault = true)
-    public boolean sendSignInMessage(SignInMessage signInMessage) {
+    public void sendSignInMessage(SignInMessage signInMessage) {
         String accessToken = (String) sisRedisTemplate.opsForValue().get("wx_access_token");
-        if (null == accessToken) return false;
+        if (null == accessToken) return;
         SisSchedule sisSchedule = sisScheduleMapper.selectByPrimaryKey(signInMessage.getSsId());
-        if (null == sisSchedule) return false;
+        if (null == sisSchedule) return;
         LocalDateTime signInEndTime = signInMessage.getLocalDateTime();
         SisCourse sisCourse = sisCourseMapper.selectByPrimaryKey(sisSchedule.getScId());
-        if (null == sisCourse) return false;
+        if (null == sisCourse) return;
 
         SisJoinCourseExample sisJoinCourseExample = new SisJoinCourseExample();
         sisJoinCourseExample.createCriteria().andScIdEqualTo(sisSchedule.getScId());
         List<SisJoinCourse> sisJoinCourseList = sisJoinCourseMapper.selectByExample(sisJoinCourseExample);
-        if (sisJoinCourseList.isEmpty()) return false;
+        if (sisJoinCourseList.isEmpty()) return;
 
         List<String> suIdList = sisJoinCourseList.stream().map(SisJoinCourse::getSuId).collect(Collectors.toList());
         SisUserExample sisUserExample = new SisUserExample();
@@ -64,7 +64,7 @@ public class MessageService {
         List<SisUser> sisUserList = sisUserMapper.selectByExample(sisUserExample);
 
         List<String> openidList = sisUserList.stream().map(SisUser::getSuOpenid).filter(Objects::nonNull).distinct().collect(Collectors.toList());
-        if (openidList.isEmpty()) return false;
+        if (openidList.isEmpty()) return;
 
 
         String urlFormat = "/cgi-bin/message/wxopen/template/send?access_token=%s";
@@ -120,6 +120,5 @@ public class MessageService {
                     else
                         log.info("success sendSignInMessage: " + sisCourse.getScId() + ", " + sisSchedule.getSsId());
                 });
-        return true;
     }
 }
